@@ -1,0 +1,5 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="phoneStore" type="PhpWebAppRunConfigurationType" factoryName="PHP Web Application" singleton="false" nameIsGenerated="true" server_name="OSP">
+    <method v="2" />
+  </configuration>
+</component>
