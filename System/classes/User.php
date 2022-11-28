@@ -113,7 +113,7 @@ class User{
         if (!empty($user)) {
             $_SESSION['username'] = $user['username'];
             $_SESSION['uid'] = $user['id'];
-            echo "<script>location.replace('/admin_panel/?page=main')</script>";
+            echo "<script>location.replace('/admin_panel/?page=admin_main')</script>";
         } else {
             echo "Username or Password not correct";
         }

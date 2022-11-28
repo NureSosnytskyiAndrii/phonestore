@@ -1,6 +1,16 @@
 <?php
  global $mysqli;
- $value = '';
+ //$value = '';
+
+if(isset($_GET['action']) && $_GET['action'] == "delete") {
+    $mysqli->query("DELETE FROM smartphone WHERE smartphone_id='" . $_GET['id'] . "'") or die($mysqli->error);
+    echo '<div class="alert alert-danger alert-dismissible fade show" role="alert">
+  <strong>Success!</strong> Phone with ID = ' . $_GET['id'] . ' has been removed!
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>';
+}
 ?>
 <h1 class="text-info">Welcome to Admin Panel!</h1>
 <style>
@@ -50,6 +60,7 @@
     <ul>
         <li><a type="button" href="#" onclick="showAllPhones()">Show phones</a></li>
         <li><a type="button" href="#" onclick="addNewPhone()">Add phone</a></li>
+        <li><a type="button" href="#" onclick="addNewProvider()">Add provider</a></li>
         <li><a type="button" href="#">Orders</a></li>
     </ul>
 </div>
@@ -91,10 +102,10 @@
                             <th>Model</th>
                             <th>Year of prod.</th>
                             <th>Price</th>
-                            <th>Form-factor</th>
                             <th>Operation system</th>
                             <th>Quantity</th>
                             <th>Warranty</th>
+                            <th></th>
                             <th></th>
                             <th></th>
                             <th></th>
@@ -112,14 +123,14 @@
                                 <td><?= $phone-> model; ?></td>
                                 <td><?= $phone->year_of_production; ?></td>
                                 <td><?= $phone->price . '$' ?></td>
-                                <td><?php echo $phone->form_factor ?: "Not filled"; ?></td>
                                 <td><?php echo $phone->operation_system ?: "Not filled"; ?></td>
                                 <td><?php echo $phone->number_of_items ?: "Not filled"; ?></td>
                                 <td><?php echo $phone->warranty ?: "Not filled"; ?></td>
-                                <td><a type="button" href="update_smartphones.php?id=<?= $phone->smartphone_id ?>" class="btn btn-warning">Edit</a> </td>
-                                <td> <a type="button" href="Vendor/delete.php?id=<?= $phone->smartphone_id ?>"
-                                        class="btn btn-danger">Delete</a></td>
-                                <td> <a type="button" href="seperate_characteristic.php?id=<?= $phone->smartphone_id ?>"
+                                <td><a type="button" class="btn btn-primary" href="/?page=phone_info&id=<?= $phone->smartphone_id;?>">Info</a></td>
+                                <td><a type="button" class="btn btn-warning" href="/?page=phone_edit&id=<?= $phone->smartphone_id ?>">Edit</a></td>
+                                <td>  <a href="/?page=admin_main&action=delete&id=<?= $phone->smartphone_id; ?>"
+                                         class="btn btn-danger">Delete</a></td>
+                                <td> <a type="button" href="/?page=add_characteristics&id=<?= $phone->smartphone_id ?>"
                                         class="btn btn-info">Characteristics</a></td>
                             </tr>
                         <?php } ?>
@@ -157,7 +168,7 @@
         <p>Provider</p>
         <select name="provider">
             <?php
-            $all_providers = $mysqli->query("SELECT * FROM `provider`");
+            $all_providers = $mysqli->query("SELECT * FROM `provider` WHERE provider.email IS NOT NULL");
 
             while ($Provider = $all_providers->fetch_object()) {
                 ?>
@@ -170,14 +181,48 @@
         <button type="submit" class="btn btn-success" style="margin: 10px;">Add new smartphone</button>
     </form>
 </div>
+
+<div style="margin-left: 300px;" class="container col-9" id="addNewProvider" hidden="hidden">
+    <form method="post" id="form" align="center">
+        <p>Provider name</p>
+        <input type="text" name="provider_name"/>
+        <p>Provider surname</p>
+        <input type="text" name="provider_surname"/>
+        <p>Email</p>
+        <input type="email" name="email"/>
+        <p>Phone</p>
+        <input type="text" name="provider_phone"/>
+        <p>Address</p>
+        <input type="text" name="provider_address"/>
+        <br/> <br/>
+        <button type="submit" class="btn btn-success">Add new provider</button>
+    </form>
+</div>
+<?php
+    $provider_name = $_POST['provider_name'];
+    $provider_surname = $_POST['provider_surname'];
+    $email = $_POST['email'];
+    $provider_phone = $_POST['provider_phone'];
+    $provider_address = $_POST['provider_address'];
+if(($provider_name &&  $provider_surname && $email && $provider_phone && $provider_address) != '') {
+    mysqli_query($mysqli, "INSERT INTO `provider`(`provider_id`, `provider_name`, `provider_surname`, `email`, `phone`, `address`) VALUES (NULL, '$provider_name', '$provider_surname', '$email', '$provider_phone', '$provider_address')");
+}
+?>
 <script>
     function showAllPhones() {
         document.getElementById('smartphones_one_brand').removeAttribute("hidden", true);
         document.getElementById('addNewPhone').setAttribute("hidden", true);
+        document.getElementById('addNewProvider').setAttribute("hidden", true);
     }
     function addNewPhone() {
         document.getElementById('addNewPhone').removeAttribute("hidden", true);
         document.getElementById('smartphones_one_brand').setAttribute("hidden", true);
+        document.getElementById('addNewProvider').setAttribute("hidden", true);
+    }
+    function addNewProvider() {
+        document.getElementById('addNewPhone').setAttribute("hidden", true);
+        document.getElementById('smartphones_one_brand').setAttribute("hidden", true);
+        document.getElementById('addNewProvider').removeAttribute("hidden", true);
     }
 </script>
 

@@ -11,16 +11,18 @@ if(isset($_GET['page'])) {
         case "main":
             require_once "Vendor/preview.php";
             break;
-        /*case "users_list":
-            require_once "pages/users_list.php";
+        case "admin_main":
+            require_once "admin_panel/pages/admin_main.php";
             break;
-        case "user_edit":
-            require_once "pages/user_edit.php";
+        case "add_characteristics":
+            require_once "admin_panel/pages/add_characteristics.php";
             break;
-        case "user_view":
-            require_once "pages/user_view.php";
+        case "phone_info":
+            require_once "admin_panel/pages/phone_info.php";
             break;
-*/
+        case "phone_edit":
+            require_once "admin_panel/pages/phone_edit.php";
+            break;
 
         default:
             require_once "Vendor/404.php";
