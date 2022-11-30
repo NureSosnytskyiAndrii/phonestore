@@ -11,6 +11,12 @@ if(isset($_GET['page'])) {
         case "main":
             require_once "Vendor/preview.php";
             break;
+        case "phone_details":
+            require_once "Vendor/phone_details.php";
+            break;
+        case "seperate_phones":
+            require_once "Vendor/seperate_phones.php";
+            break;
         case "admin_main":
             require_once "admin_panel/pages/admin_main.php";
             break;
@@ -22,6 +28,18 @@ if(isset($_GET['page'])) {
             break;
         case "phone_edit":
             require_once "admin_panel/pages/phone_edit.php";
+            break;
+        case "remove_brand":
+            require_once "admin_panel/pages/remove_brand.php";
+            break;
+        case "remove_provider":
+            require_once "admin_panel/pages/remove_provider.php";
+            break;
+        case "edit_provider":
+            require_once "admin_panel/pages/edit_provider.php";
+            break;
+        case "edit_one_characteristic":
+            require_once "admin_panel/pages/edit_one_characteristic.php";
             break;
 
         default:

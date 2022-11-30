@@ -21,6 +21,18 @@ if(isset($_GET['page'])) {
         case "phone_edit":
             require_once "pages/phone_edit.php";
             break;
+        case "remove_brand":
+            require_once "pages/remove_brand.php";
+            break;
+        case "remove_provider":
+            require_once "pages/remove_provider.php";
+            break;
+        case "edit_provider":
+            require_once "pages/edit_provider.php";
+            break;
+        case "edit_one_characteristic":
+            require_once "pages/edit_one_characteristic.php";
+            break;
         default:
             require_once "/pages/404.php";
     }

@@ -59,6 +59,8 @@ if(isset($_GET['action']) && $_GET['action'] == "delete") {
     <p id="Email" style="color: #e4e7e0; font-style: italic;margin-left: 20px; font-size: 1.1em;"></p>
     <ul>
         <li><a type="button" href="#" onclick="showAllPhones()">Show phones</a></li>
+        <li><a type="button" href="#" onclick="showBrands()">Show brands</a></li>
+        <li><a type="button" href="#" onclick="showProviders()">Show providers</a></li>
         <li><a type="button" href="#" onclick="addNewPhone()">Add phone</a></li>
         <li><a type="button" href="#" onclick="addNewProvider()">Add provider</a></li>
         <li><a type="button" href="#">Orders</a></li>
@@ -143,6 +145,68 @@ if(isset($_GET['action']) && $_GET['action'] == "delete") {
 </div>
 </div>
 
+<div style="margin-left: 300px;" class="container col-9" id="showAllBrands" hidden="hidden">
+    <table class="table table-striped">
+        <thead class="thead-dark">
+        <tr>
+            <th>Brand name</th>
+            <th>Country</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <?php
+        $all_brands = $mysqli->query("SELECT * FROM `brand` ");
+
+        while ($brand = $all_brands->fetch_object()) {
+            ?>
+            <tr>
+                <td><?= $brand->brand_name; ?></td>
+                <td><?= $brand->country; ?></td>
+                <td> <a type="button" href="/?page=remove_brand&id=<?= $brand->brand_id; ?>"
+                        class="btn btn-danger">Delete</a></td>
+            </tr>
+        <?php } ?>
+        </tbody>
+    </table>
+</div>
+
+<div style="margin-left: 300px;" class="container col-9" id="showAllProviders" hidden="hidden">
+    <table class="table table-striped">
+        <thead class="thead-dark">
+        <tr>
+            <th>Provider name</th>
+            <th>Provider surname</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Address</th>
+            <th></th>
+            <th></th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <?php
+        $all_providers = $mysqli->query("SELECT * FROM `provider` ");
+
+        while ($provider = $all_providers->fetch_object()) {
+            ?>
+            <tr>
+                <td><?= $provider->provider_name; ?></td>
+                <td><?= $provider->provider_surname; ?></td>
+                <td><?= $provider->email; ?></td>
+                <td><?= $provider->phone; ?></td>
+                <td><?= $provider->address; ?></td>
+                <td><a type="button" href="/?page=remove_provider&id=<?= $provider->provider_id; ?>"
+                       class="btn btn-danger">Delete</a></td>
+                <td><a type="button" href="/?page=edit_provider&id=<?= $provider->provider_id; ?>"
+                       class="btn btn-warning">Edit</a></td>
+            </tr>
+        <?php } ?>
+        </tbody>
+    </table>
+</div>
+
 <div style="margin-left: 300px;" class="container col-9" id="addNewPhone" hidden="hidden">
     <form action="add_new_smartphone.php" method="post" id="form" align="center">
         <p>Smartphone brand</p>
@@ -213,16 +277,36 @@ if(($provider_name &&  $provider_surname && $email && $provider_phone && $provid
         document.getElementById('smartphones_one_brand').removeAttribute("hidden", true);
         document.getElementById('addNewPhone').setAttribute("hidden", true);
         document.getElementById('addNewProvider').setAttribute("hidden", true);
+        document.getElementById('showAllBrands').setAttribute("hidden", true);
+        document.getElementById('showAllProviders').setAttribute("hidden", true);
     }
     function addNewPhone() {
         document.getElementById('addNewPhone').removeAttribute("hidden", true);
         document.getElementById('smartphones_one_brand').setAttribute("hidden", true);
         document.getElementById('addNewProvider').setAttribute("hidden", true);
+        document.getElementById('showAllBrands').setAttribute("hidden", true);
+        document.getElementById('showAllProviders').setAttribute("hidden", true);
     }
     function addNewProvider() {
         document.getElementById('addNewPhone').setAttribute("hidden", true);
         document.getElementById('smartphones_one_brand').setAttribute("hidden", true);
         document.getElementById('addNewProvider').removeAttribute("hidden", true);
+        document.getElementById('showAllBrands').setAttribute("hidden", true);
+        document.getElementById('showAllProviders').setAttribute("hidden", true);
+    }
+    function showBrands(){
+        document.getElementById('addNewPhone').setAttribute("hidden", true);
+        document.getElementById('smartphones_one_brand').setAttribute("hidden", true);
+        document.getElementById('addNewProvider').setAttribute("hidden", true);
+        document.getElementById('showAllBrands').removeAttribute("hidden", true);
+        document.getElementById('showAllProviders').setAttribute("hidden", true);
+    }
+    function showProviders() {
+        document.getElementById('addNewPhone').setAttribute("hidden", true);
+        document.getElementById('smartphones_one_brand').setAttribute("hidden", true);
+        document.getElementById('addNewProvider').setAttribute("hidden", true);
+        document.getElementById('showAllBrands').setAttribute("hidden", true);
+        document.getElementById('showAllProviders').removeAttribute("hidden", true);
     }
 </script>
 

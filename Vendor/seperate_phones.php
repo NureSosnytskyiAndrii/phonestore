@@ -1,7 +1,7 @@
 <?php
 
 global $mysqli;
-require_once "../System/configuration.php";
+require_once "System/configuration.php";
 
 $Brand_id = $_GET['id'];
 
@@ -44,7 +44,8 @@ $Brand_id = $_GET['id'];
 
                     <div class="info">
                         <h3><?= $phone->brand_name; ?></h3>
-                        <h4><a href="../Vendor/phone_details.php?id=<?= $phone->smartphone_id. '&brand_id='. $phone->brand_id; ?>"><?= $phone-> model; ?></a></h4>
+                       <!-- <h4><a href="../Vendor/phone_details.php?id=<?= $phone->smartphone_id. '&brand_id='. $phone->brand_id; ?>"><?= $phone-> model; ?></a></h4>-->
+                        <h4><a href="/?page=phone_details&id=<?= $phone->smartphone_id. '&brand_id='. $phone->brand_id; ?>"><?= $phone-> model; ?></a></h4>
 
                         <div class="info-price">
                             <span class="price"><?= $phone->price . '$' ?></span>

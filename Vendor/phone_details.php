@@ -1,7 +1,7 @@
 <?php
 
 global $mysqli;
-require_once "../System/configuration.php";
+require_once "System/configuration.php";
 
 $phone_id = $_GET['id'];
 $brand_id = $_GET['brand_id'];
@@ -39,7 +39,17 @@ $brand_id = $_GET['brand_id'];
 
                     <div class="info-price">
                         <span class="price">Price <?= $phone->price . '$' ?></span>
-                        <button class="btn add-to-cart"><ion-icon name="cart-outline"></ion-icon></button>
+
+                        <?php
+                        if (isset($_SESSION['login']) && $_SESSION['uid']) {
+                            $user_obj = new User();
+                            $user = $user_obj->getUserById($_SESSION['uid']);
+                            $user_first_name = $user['first_name'];
+                            $user_last_name = $user['last_name'];
+
+                            echo '<button class="btn add-to-cart" >Add to chart</button>';
+                        }
+                        ?>
                         <button class="btn btn-primary" onclick="showAllCharacteristics()">Show characteristics</button>
                     </div>
                 </div>

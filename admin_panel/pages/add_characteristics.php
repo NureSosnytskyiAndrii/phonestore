@@ -5,6 +5,15 @@ require_once "System/configuration.php";
 
 $id = $_GET['id'];
 
+if(isset($_GET['action']) && $_GET['action'] == "delete"){
+    $mysqli->query("DELETE FROM `technical_characteristics` WHERE characteristic_id='".$_GET['id']."'") or die($mysqli->error);
+    echo '<div class="alert alert-danger alert-dismissible fade show" role="alert">
+  <strong>Success!</strong> Characteristic with ID = '.$_GET['id'].' has been removed!
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>';
+}
 ?>
 
 <!DOCTYPE html>
@@ -37,9 +46,9 @@ $id = $_GET['id'];
         <tr>
             <td><?= $phone-> characteristic_name; ?></td>
             <td><?= $phone->description; ?></td>
-            <td> <a type="button" href="Vendor/del_one_characteristic.php?id=<?= $phone->characteristic_id ?>"
+            <td> <a type="button" href="/?page=add_characteristics&action=delete&id=<?= $phone->characteristic_id ?>"
                     class="btn btn-danger">Delete</a></td>
-            <td> <a type="button" href="up_one_char.php?id=<?= $phone->characteristic_id ?>"
+            <td> <a type="button" href="/?page=edit_one_characteristic&id=<?= $phone->characteristic_id ?>"
                     class="btn btn-warning">Edit</a></td>
         </tr>
     <?php } ?>
