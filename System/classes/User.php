@@ -11,6 +11,7 @@ class User{
         global $mysqli;
         $user_result = $mysqli->query("SELECT * FROM user WHERE user_id = '$id'");
         $user = $user_result->fetch_assoc();
+
         return $user;
     }
 
@@ -76,6 +77,7 @@ class User{
  <button type='button' class='close' data-dismiss='alert' aria-label='Close'>
   </button></div>";
         }else {
+
             $mysqli->query("
             INSERT INTO
                 user (
@@ -93,7 +95,9 @@ class User{
                         '" . $last_name . "', 
                         '".$status."'
                         )  "
-            )
+            );
+
+        $mysqli->query("INSERT INTO basket VALUES (NULL, (SELECT user_id FROM user WHERE login='$login'))")
             or
                 die($mysqli->error);
 

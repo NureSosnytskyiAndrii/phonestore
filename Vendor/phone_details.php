@@ -5,6 +5,7 @@ require_once "System/configuration.php";
 
 $phone_id = $_GET['id'];
 $brand_id = $_GET['brand_id'];
+$user_id = $_GET[''];
 
 ?>
 
@@ -47,7 +48,7 @@ $brand_id = $_GET['brand_id'];
                             $user_first_name = $user['first_name'];
                             $user_last_name = $user['last_name'];
 
-                            echo '<button class="btn add-to-cart" >Add to chart</button>';
+                            echo '<button class="btn add-to-cart">Add to chart</button>';
                         }
                         ?>
                         <button class="btn btn-primary" onclick="showAllCharacteristics()">Show characteristics</button>
