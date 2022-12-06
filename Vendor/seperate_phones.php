@@ -158,7 +158,7 @@ if (isset($_SESSION['login']) && $_SESSION['uid']) {
         </tbody>
     </table>
     <div>
-        <a href="#" type="button" class="btn btn-success <?php echo ($grand_total > 1)?'': 'disabled' ?>">Proceed to checkout</a>
+        <a href="/?page=checkout" type="button" class="btn btn-success <?php echo ($grand_total > 1)?'': 'disabled' ?>">Proceed to checkout</a>
     </div>
 </div>
 

@@ -51,21 +51,7 @@
                 <a class="nav-link" href="http://phoneStore.local/?page=main">Home &nbsp; <i class="fas fa-home"></i> <span class="sr-only">(current)</span></a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="/verifying/verifying.php">Users list</a>
-                <!-- href="http://game.local/?page=users_list" -->
-            </li>
-
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true"
-                   aria-expanded="false">
-                    More
-                </a>
-                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <a class="dropdown-item" href="#"> Game </a>
-                    <a class="dropdown-item" href="#"> About me </a>
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="#">About project </a>
-                </div>
+                <a class="nav-link" href="/?page=my_orders">My orders</a>
             </li>
 
         </ul>

@@ -17,6 +17,12 @@ if(isset($_GET['page'])) {
         case "seperate_phones":
             require_once "Vendor/seperate_phones.php";
             break;
+        case "checkout":
+            require_once "Vendor/checkout.php";
+            break;
+        case "my_orders":
+            require_once "Vendor/my_orders.php";
+            break;
         case "admin_main":
             require_once "admin_panel/pages/admin_main.php";
             break;

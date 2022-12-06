@@ -1,0 +1,52 @@
+.checkout .display-orders p{
+    font-size: 1.2em;
+    color: red;
+}
+.checkout .display-orders .grand-total{
+    width: 100%;
+    text-align: center;
+    font-size: 1.4em;
+    color: red;
+}
+.checkout form {
+    border: 1px black solid;
+    margin: 20px;
+    border-radius: 15px;
+    padding: 2rem;
+}
+.checkout form .flex {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+.checkout form .flex .inputBox span {
+    color: #0e97fa;
+}
+.checkout form .flex .inputBox {
+    flex: 1 1 40rem;
+}
+.checkout form .flex .inputBox .box {
+    width: 100%;
+    padding: 1.4rem;
+    font-size: 0.9rem;
+    color: black;
+}
+.btn-block {
+    margin: 10px;
+}
+.show-orders .box-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    align-items: flex-start;
+    margin: 20px;
+}
+.show-orders .box-container .box {
+    background-color: whitesmoke;
+    border-radius: .5rem;
+    padding: 2rem;
+    border: 1px solid black;
+}
+.show-orders .box-container .box p span {
+    color: #0e97fa;
+}
