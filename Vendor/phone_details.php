@@ -7,6 +7,15 @@ $phone_id = $_GET['id'];
 $brand_id = $_GET['brand_id'];
 $user_id = $_GET[''];
 
+if(isset($_GET['action']) && $_GET['action'] == "delete_review") {
+    $mysqli->query("DELETE FROM review WHERE review_id='" . $_GET['id'] . "'") or die($mysqli->error);
+    echo '<div class="alert alert-danger alert-dismissible fade show" role="alert">
+  <strong>Review has have been removed!</strong>
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>';
+}
 ?>
 
 <!doctype html>
@@ -19,9 +28,25 @@ $user_id = $_GET[''];
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <style>
+        .container-buttons {
+            display: flex;
+            justify-content: space-around;
+        }
+        .container-buttons button {
+            margin: 5px;
+        }
+        .container {
+            float: left;
+            margin-left: 200px;
+        }
+        table {
+            margin-top: 30px;
+        }
+    </style>
 </head>
 <body>
-<div class="container col-4 form-inline">
+<div class="container col-4">
     <div class="row">
         <?php
         //$all_phones = $mysqli->query("SELECT image, model, price FROM smartphone WHERE smartphone_id = '$phone_id'");
@@ -41,17 +66,20 @@ $user_id = $_GET[''];
                     <div class="info-price">
                         <span class="price">Price <?= $phone->price . '$' ?></span>
 
-                        <?php
+                        <div class="container-buttons">
+                            <button class="btn btn-success" onclick="showAllCharacteristics()">Show characteristics</button>
+
+                            <?php
                         if (isset($_SESSION['login']) && $_SESSION['uid']) {
                             $user_obj = new User();
                             $user = $user_obj->getUserById($_SESSION['uid']);
                             $user_first_name = $user['first_name'];
                             $user_last_name = $user['last_name'];
-
-                            echo '<button class="btn add-to-cart">Add to chart</button>';
+                                echo '<button class="btn btn-success" onclick="showReviewForm()">Leave a review</button>';
                         }
                         ?>
-                        <button class="btn btn-primary" onclick="showAllCharacteristics()">Show characteristics</button>
+                            <a href="#" onclick="showAllReviews()">Show reviews</a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -59,14 +87,14 @@ $user_id = $_GET[''];
         <?php } ?>
     </div>
 </div>
-<table class="table table-striped" id="characteristics" hidden="hidden">
-    <thead class="thead-dark">
+
+<div id="characteristics" hidden="hidden">
+<h2 style="color: #f11e1e">Characteristics</h2>
+<table class="table table-striped col-6">
+    <thead class="thead-light">
     <tr>
-        <th>Smartphone ID</th>
-        <th>Characteristic ID</th>
         <th>Name</th>
         <th>Description</th>
-        <th></th>
     </tr>
     </thead>
     <tbody>
@@ -76,18 +104,81 @@ $user_id = $_GET[''];
     while ($phone = $all_phones->fetch_object()) {
         ?>
         <tr>
-            <td><?= $phone->smartphone_id?></td>
-            <td><?= $phone->characteristic_id;?></td>
             <td><?php echo $phone->characteristic_name?: "Not filled"; ?></td>
             <td><?php echo $phone-> description?: "Not filled"; ?></td>
         </tr>
     <?php } ?>
     </tbody>
 </table>
+</div>
+
+<table class="table col-9" hidden="hidden" id="reviews">
+    <thead>
+    <tr>
+        <th scope="col">Username</th>
+        <th scope="col">Review</th>
+        <th scope="col">Rate</th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    <?php
+        $all_reviews = mysqli_query($mysqli, "SELECT review_id, rate, review_text, user.login  FROM review, user WHERE user.user_id = review.user_id AND smartphone_id = '$phone_id' ORDER BY rate DESC");
+        while ($fetch_reviews = $all_reviews->fetch_object()){
+    ?>
+    <tr>
+        <td><?=$fetch_reviews->login;?></td>
+        <td><?=$fetch_reviews->review_text;?></td>
+        <td><?=$fetch_reviews->rate;?></td>
+        <td><a type="button" class="btn btn-danger" href="/?page=phone_details&action=delete_review&id=<?=$fetch_reviews->review_id;?>">Delete</a></td>
+    </tr>
+    <?php } ?>
+    </tbody>
+</table>
+
+<div id="reviewForm" hidden="hidden" class="col-6" style="margin-left: 400px;margin-top: 300px;">
+    <h2 style="color: #007bff;">Leave a review</h2>
+<form method="post">
+    <div class="form-group">
+        <label for="exampleFormControlSelect1">Choose rating</label>
+        <select class="form-control" name="rate">
+            <option>1</option>
+            <option>2</option>
+            <option>3</option>
+            <option>4</option>
+            <option>5</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="exampleFormControlTextarea1">Your comment</label>
+        <textarea class="form-control" name="review_text" rows="3"></textarea>
+    </div>
+    <div>
+        <button style="margin: 5px;" class="btn btn-primary" formmethod="post"> Post a review </button>
+    </div>
+</form>
+    <?php
+    if (isset($_SESSION['login']) && $_SESSION['uid']) {
+        $user_obj = new User();
+        $user = $user_obj->getUserById($_SESSION['uid']);
+        $user_id = $user['user_id'];
+
+        $text = $_POST['review_text'];
+        $rate = $_POST['rate'];
+        mysqli_query($mysqli, "INSERT INTO `review`(review_id, rate, review_text, user_id, smartphone_id) VALUES (NULL,  '$rate', '$text', '$user_id', '$phone_id')");
+    }
+    ?>
+</div>
 
 <script>
     function showAllCharacteristics() {
         document.getElementById('characteristics').removeAttribute("hidden", true);
+    }
+    function showReviewForm() {
+        document.getElementById('reviewForm').removeAttribute("hidden", true);
+    }
+    function showAllReviews() {
+        document.getElementById('reviews').removeAttribute("hidden", true);
     }
 </script>
 </body>

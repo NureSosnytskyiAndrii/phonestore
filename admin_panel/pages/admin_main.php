@@ -11,6 +11,33 @@ if(isset($_GET['action']) && $_GET['action'] == "delete") {
   </button>
 </div>';
 }
+
+if((isset($_GET['action']) && $_GET['action'] == "delete_one_order") && isset($_GET['payment_status']) && $_GET['payment_status']=="Completed"){
+    $mysqli->query("DELETE FROM `order` WHERE order_id='" .$_GET['id']."'");
+    echo '<div class="alert alert-warning alert-dismissible fade show" role="alert">
+  <strong>Success!</strong> Order with ID = ' . $_GET['id'] . ' and status "Completed" has been removed!
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>';
+}
+
+if((isset($_GET['action']) && $_GET['action'] == "delete_one_order") && isset($_GET['payment_status']) && $_GET['payment_status']=="pending"){
+    $selected_goods = mysqli_query($mysqli,"select order_items.quantity, smartphone.smartphone_id from order_items, smartphone WHERE
+                     order_items.order_id = '" .$_GET['id']."' AND smartphone.smartphone_id =order_items.smartphone_id ");
+    if (mysqli_num_rows($selected_goods) > 0) {
+        while ($row = mysqli_fetch_assoc($selected_goods)) {
+           mysqli_query($mysqli,"UPDATE `smartphone` SET number_of_items = number_of_items + '$row[quantity]' WHERE smartphone_id ='$row[smartphone_id]'");
+        }
+    }
+    $mysqli->query("DELETE FROM `order` WHERE order_id='" .$_GET['id']."'");
+    echo '<div class="alert alert-danger alert-dismissible fade show" role="alert">
+  <strong>Success!</strong> Order with ID = ' . $_GET['id'] . ' and status "Pending" has been removed!
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>';
+}
 ?>
 <h1 class="text-info">Welcome to Admin Panel!</h1>
 <style>
@@ -53,6 +80,22 @@ if(isset($_GET['action']) && $_GET['action'] == "delete") {
     .sidebar ul a ion-icon {
         margin-right: 16px;
     }
+    .show-orders .box-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+        align-items: flex-start;
+        margin: 20px;
+    }
+    .show-orders .box-container .box {
+        background-color: whitesmoke;
+        border-radius: .5rem;
+        padding: 2rem;
+        border: 1px solid black;
+    }
+    .show-orders .box-container .box p span {
+        color: #0e97fa;
+    }
 </style>
 <div class="sidebar">
     <header>Admin panel</header>
@@ -63,7 +106,7 @@ if(isset($_GET['action']) && $_GET['action'] == "delete") {
         <li><a type="button" href="#" onclick="showProviders()">Show providers</a></li>
         <li><a type="button" href="#" onclick="addNewPhone()">Add phone</a></li>
         <li><a type="button" href="#" onclick="addNewProvider()">Add provider</a></li>
-        <li><a type="button" href="#">Orders</a></li>
+        <li><a type="button" href="#" onclick="showOrders()">Orders</a></li>
     </ul>
 </div>
 
@@ -272,6 +315,63 @@ if(($provider_name &&  $provider_surname && $email && $provider_phone && $provid
     mysqli_query($mysqli, "INSERT INTO `provider`(`provider_id`, `provider_name`, `provider_surname`, `email`, `phone`, `address`) VALUES (NULL, '$provider_name', '$provider_surname', '$email', '$provider_phone', '$provider_address')");
 }
 ?>
+
+<div style="margin-left: 300px;" class="container col-9 show-orders" id="showOrders" hidden="hidden">
+    <div class="box-container">
+    <?php
+        $orders = mysqli_query($mysqli, "SELECT * FROM `order`");
+        while ($show_orders = $orders->fetch_object()){
+    ?>
+        <form method="post" class="col-9">
+            <div class="box">
+                <input type="hidden" name = "order_id" value="<?=$show_orders->order_id?>"/>
+                <p hidden="hidden"> user id <span><?=$show_orders->user_id;?></span></p>
+                <p> name: <span><?=$show_orders->name;?></span></p>
+                <p> surname: <span><?=$show_orders->surname;?></span></p>
+                <p> phone number: <span><?=$show_orders->number;?></span></p>
+                <p> email: <span><?=$show_orders->email;?></span></p>
+                <p> city: <span><?=$show_orders->city;?></span></p>
+                <p> street: <span><?=$show_orders->street;?></span></p>
+                <p> flat: <span><?=$show_orders->flat;?></span></p>
+                <p> payment method: <span><?=$show_orders->payment_method;?></span></p>
+                <p> payment status:
+                    <select name="change_order_status" id="change_order">
+                        <option>Pending</option>
+                        <option>Completed</option>
+                    </select>
+                    <?= $show_orders->payment_status; ?>
+                </p>
+                <p> order date: <span><?=$show_orders->order_date;?></span></p>
+                <p> order time: <span><?=$show_orders->order_time;?></span></p>
+                <p> total cost: <span>$ <?=$show_orders->cost;?></span></p>
+              <button class="btn btn-warning" formmethod="post">Update</button>
+                <a type="button" class="btn btn-danger" href="/?page=admin_main&action=delete_one_order&id=<?=$show_orders->order_id;?>&payment_status=<?=$show_orders->payment_status;?>">Delete</a>
+            </div>
+        </form>
+        <?php
+                    echo '<div><b>Items:</b></div>';
+                    $selected_goods = mysqli_query($mysqli,"select order_items.quantity, smartphone.model from order_items, smartphone WHERE
+                     order_items.order_id = '$show_orders->order_id' AND smartphone.smartphone_id =order_items.smartphone_id ");
+
+                if (mysqli_num_rows($selected_goods) > 0) {
+                    while ($row = mysqli_fetch_assoc($selected_goods)) {
+                        printf("%s (%s)\n", $row["model"], $row["quantity"]);
+                    }
+                 }
+           }
+        ?>
+    </div>
+    <?php
+       if(isset($_POST['change_order_status'])){
+            $val = $_POST['change_order_status'];
+            echo $val;
+            $order_id = $_POST['order_id'];
+            echo $order_id;
+            mysqli_query($mysqli, "UPDATE `order` SET payment_status = '$val' WHERE `order`.order_id = '$order_id'");
+        }
+    ?>
+</div>
+
 <script>
     function showAllPhones() {
         document.getElementById('smartphones_one_brand').removeAttribute("hidden", true);
@@ -279,6 +379,7 @@ if(($provider_name &&  $provider_surname && $email && $provider_phone && $provid
         document.getElementById('addNewProvider').setAttribute("hidden", true);
         document.getElementById('showAllBrands').setAttribute("hidden", true);
         document.getElementById('showAllProviders').setAttribute("hidden", true);
+        document.getElementById('showOrders').setAttribute("hidden", true);
     }
     function addNewPhone() {
         document.getElementById('addNewPhone').removeAttribute("hidden", true);
@@ -286,6 +387,7 @@ if(($provider_name &&  $provider_surname && $email && $provider_phone && $provid
         document.getElementById('addNewProvider').setAttribute("hidden", true);
         document.getElementById('showAllBrands').setAttribute("hidden", true);
         document.getElementById('showAllProviders').setAttribute("hidden", true);
+        document.getElementById('showOrders').setAttribute("hidden", true);
     }
     function addNewProvider() {
         document.getElementById('addNewPhone').setAttribute("hidden", true);
@@ -293,6 +395,7 @@ if(($provider_name &&  $provider_surname && $email && $provider_phone && $provid
         document.getElementById('addNewProvider').removeAttribute("hidden", true);
         document.getElementById('showAllBrands').setAttribute("hidden", true);
         document.getElementById('showAllProviders').setAttribute("hidden", true);
+        document.getElementById('showOrders').setAttribute("hidden", true);
     }
     function showBrands(){
         document.getElementById('addNewPhone').setAttribute("hidden", true);
@@ -300,6 +403,7 @@ if(($provider_name &&  $provider_surname && $email && $provider_phone && $provid
         document.getElementById('addNewProvider').setAttribute("hidden", true);
         document.getElementById('showAllBrands').removeAttribute("hidden", true);
         document.getElementById('showAllProviders').setAttribute("hidden", true);
+        document.getElementById('showOrders').setAttribute("hidden", true);
     }
     function showProviders() {
         document.getElementById('addNewPhone').setAttribute("hidden", true);
@@ -307,6 +411,15 @@ if(($provider_name &&  $provider_surname && $email && $provider_phone && $provid
         document.getElementById('addNewProvider').setAttribute("hidden", true);
         document.getElementById('showAllBrands').setAttribute("hidden", true);
         document.getElementById('showAllProviders').removeAttribute("hidden", true);
+        document.getElementById('showOrders').setAttribute("hidden", true);
+    }
+    function showOrders() {
+        document.getElementById('addNewPhone').setAttribute("hidden", true);
+        document.getElementById('smartphones_one_brand').setAttribute("hidden", true);
+        document.getElementById('addNewProvider').setAttribute("hidden", true);
+        document.getElementById('showAllBrands').setAttribute("hidden", true);
+        document.getElementById('showAllProviders').setAttribute("hidden", true);
+        document.getElementById('showOrders').removeAttribute("hidden", true);
     }
 </script>
 

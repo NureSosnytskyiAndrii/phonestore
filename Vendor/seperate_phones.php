@@ -26,7 +26,7 @@ if (isset($_SESSION['login']) && $_SESSION['uid']) {
         if (mysqli_num_rows($selected_cart) > 0) {
             echo "product already added to cart!";
         } else {
-            mysqli_query($mysqli, "INSERT INTO `basket_device` VALUES(NULL, '$basket_id[basket_id]',  (SELECT smartphone_id FROM smartphone WHERE smartphone.smartphone_id = '$phone_id'),1 )");
+            mysqli_query($mysqli, "INSERT INTO `basket_device` VALUES(NULL, '$basket_id[basket_id]',  (SELECT smartphone_id FROM smartphone WHERE smartphone.smartphone_id = '$phone_id' AND smartphone.number_of_items !=0),1 )");
             echo "product added to cart!";
         }
     }
@@ -73,7 +73,7 @@ if (isset($_SESSION['login']) && $_SESSION['uid']) {
 <body>
 <div class="container  form-inline">
     <?php
-    $all_phones = $mysqli->query("SELECT smartphone_id, smartphone.brand_id, model, price, image, brand.brand_name FROM `smartphone`, `brand` WHERE smartphone.brand_id=brand.brand_id AND brand.brand_name in (SELECT brand.brand_name FROM brand WHERE brand.brand_id = '$Brand_id') ");
+    $all_phones = $mysqli->query("SELECT smartphone_id, smartphone.brand_id, model, price, image, brand.brand_name FROM `smartphone`, `brand` WHERE number_of_items!=0 and smartphone.brand_id=brand.brand_id AND brand.brand_name in (SELECT brand.brand_name FROM brand WHERE brand.brand_id = '$Brand_id') ");
 
     while ($phone = $all_phones->fetch_object()) {
         ?>

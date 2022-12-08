@@ -48,7 +48,7 @@ if (isset($_SESSION['login']) && $_SESSION['uid']) {
                         <p hidden="hidden"> user id <span><?=$fetch_orders->user_id;?></span></p>
                         <p> name: <span><?=$fetch_orders->name;?></span></p>
                         <p> surname: <span><?=$fetch_orders->surname;?></span></p>
-                        <p> phone number: <span><?=$fetch_orders->number;?></span></p>
+                        <p> phone number: <span><?=$fetch_orders->phone_number;?></span></p>
                         <p> email: <span><?=$fetch_orders->email;?></span></p>
                         <p> city: <span><?=$fetch_orders->city;?></span></p>
                         <p> street: <span><?=$fetch_orders->street;?></span></p>
@@ -58,9 +58,9 @@ if (isset($_SESSION['login']) && $_SESSION['uid']) {
                         <p> order date: <span><?=$fetch_orders->order_date;?></span></p>
                         <p> order time: <span><?=$fetch_orders->order_time;?></span></p>
                         <p> total cost: <span>$ <?=$fetch_orders->cost;?></span></p>
-                        <p> total cost: <span><?=$fetch_orders->smartphone_id;?></span></p>
+                        <a type="button" class="btn btn-success" <?php if($fetch_orders->payment_status == 'pending')echo 'hidden="hidden"'; ?>href="../System/classes/order_to_pdf.php?id=<?=$fetch_orders->order_id;?>" target="_blank">Print receipt</a>
                     </div>
-        <?php
+            <?php
                     echo '<div><b>Items:</b></div>';
                     $selected_goods = mysqli_query($mysqli,"select order_items.quantity, smartphone.model from order_items, smartphone WHERE
                      order_items.order_id = '$fetch_orders->order_id' AND smartphone.smartphone_id =order_items.smartphone_id ");
