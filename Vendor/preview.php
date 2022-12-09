@@ -32,7 +32,7 @@ require_once "System/configuration.php";
 
     while ($brand = $all_brands->fetch_object()) {
     ?>
-    <div class="form-inline">
+    <div>
         <a type="button" href="/?page=seperate_phones&id=<?= $brand->brand_id ?>"
            class="btn btn-primary"><?=$brand->brand_name?></a></td>
     </div>

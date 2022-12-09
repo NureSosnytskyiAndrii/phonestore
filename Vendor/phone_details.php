@@ -7,14 +7,21 @@ $phone_id = $_GET['id'];
 $brand_id = $_GET['brand_id'];
 $user_id = $_GET[''];
 
-if(isset($_GET['action']) && $_GET['action'] == "delete_review") {
-    $mysqli->query("DELETE FROM review WHERE review_id='" . $_GET['id'] . "'") or die($mysqli->error);
-    echo '<div class="alert alert-danger alert-dismissible fade show" role="alert">
+if (isset($_SESSION['login']) && $_SESSION['uid']) {
+    $user_obj = new User();
+    $user = $user_obj->getUserById($_SESSION['uid']);
+    $user_id = $user['user_id'];
+    $user_status = $user['status'];
+
+    if (isset($_GET['action']) && $_GET['action'] == "delete_review") {
+        $mysqli->query("DELETE FROM review WHERE review_id='" . $_GET['id'] . "'") or die($mysqli->error);
+        echo '<div class="alert alert-danger alert-dismissible fade show" role="alert">
   <strong>Review has have been removed!</strong>
   <button type="button" class="close" data-dismiss="alert" aria-label="Close">
     <span aria-hidden="true">&times;</span>
   </button>
 </div>';
+    }
 }
 ?>
 
@@ -50,7 +57,9 @@ if(isset($_GET['action']) && $_GET['action'] == "delete_review") {
     <div class="row">
         <?php
         //$all_phones = $mysqli->query("SELECT image, model, price FROM smartphone WHERE smartphone_id = '$phone_id'");
-        $all_phones = $mysqli->query("SELECT image, brand.brand_name, model, price FROM smartphone, brand WHERE smartphone_id = '$phone_id' and smartphone.brand_id = brand.brand_id AND brand.brand_name in (SELECT brand.brand_name FROM brand WHERE brand.brand_id = '$brand_id')");
+        $avg_rating = $mysqli->query("SELECT AVG(rate) FROM review WHERE smartphone_id='$phone_id'");
+        $avg_rating = mysqli_fetch_assoc($avg_rating);
+        $all_phones = $mysqli->query("SELECT image, brand.brand_name, model, price FROM smartphone, brand WHERE smartphone.smartphone_id = '$phone_id' and smartphone.brand_id = brand.brand_id  AND brand.brand_name in (SELECT brand.brand_name FROM brand WHERE brand.brand_id = '$brand_id')");
         while ($phone = $all_phones->fetch_object()) {
         ?>
         <div class="col-md-4">
@@ -65,7 +74,9 @@ if(isset($_GET['action']) && $_GET['action'] == "delete_review") {
 
                     <div class="info-price">
                         <span class="price">Price <?= $phone->price . '$' ?></span>
-
+                        <div>
+                        <span class="rate">Rate: <?= $avg_rating['AVG(rate)'] ?: "Not filled"; ?></span>
+                        </div>
                         <div class="container-buttons">
                             <button class="btn btn-success" onclick="showAllCharacteristics()">Show characteristics</button>
 
@@ -123,16 +134,22 @@ if(isset($_GET['action']) && $_GET['action'] == "delete_review") {
     </thead>
     <tbody>
     <?php
-        $all_reviews = mysqli_query($mysqli, "SELECT review_id, rate, review_text, user.login  FROM review, user WHERE user.user_id = review.user_id AND smartphone_id = '$phone_id' ORDER BY rate DESC");
+    if (isset($_SESSION['login']) && $_SESSION['uid']) {
+    $user_obj = new User();
+    $user = $user_obj->getUserById($_SESSION['uid']);
+    $user_id = $user['user_id'];
+    echo $user_id;
+        $all_reviews = mysqli_query($mysqli, "SELECT review_id, rate, review_text, user.login, review.user_id  FROM review, user WHERE user.user_id = review.user_id AND smartphone_id = '$phone_id' ORDER BY rate DESC");
         while ($fetch_reviews = $all_reviews->fetch_object()){
     ?>
     <tr>
+        <td hidden="hidden"><?=$fetch_reviews->user_id;?></td>
         <td><?=$fetch_reviews->login;?></td>
         <td><?=$fetch_reviews->review_text;?></td>
         <td><?=$fetch_reviews->rate;?></td>
-        <td><a type="button" class="btn btn-danger" href="/?page=phone_details&action=delete_review&id=<?=$fetch_reviews->review_id;?>">Delete</a></td>
+        <td><a type="button" class="btn btn-danger" <?php if($user['user_id'] != $fetch_reviews->user_id){echo 'hidden="hidden"';}?> href="/?page=phone_details&action=delete_review&id=<?=$fetch_reviews->review_id;?>">Delete</a></td>
     </tr>
-    <?php } ?>
+    <?php } }?>
     </tbody>
 </table>
 
@@ -158,15 +175,18 @@ if(isset($_GET['action']) && $_GET['action'] == "delete_review") {
     </div>
 </form>
     <?php
-    if (isset($_SESSION['login']) && $_SESSION['uid']) {
+    /*if (isset($_SESSION['login']) && $_SESSION['uid']) {
         $user_obj = new User();
         $user = $user_obj->getUserById($_SESSION['uid']);
-        $user_id = $user['user_id'];
+        $user_id = $user['user_id'];*/
 
-        $text = $_POST['review_text'];
-        $rate = $_POST['rate'];
-        mysqli_query($mysqli, "INSERT INTO `review`(review_id, rate, review_text, user_id, smartphone_id) VALUES (NULL,  '$rate', '$text', '$user_id', '$phone_id')");
-    }
+        if(isset($_POST['review_text'])) {
+            $text = $_POST['review_text'];
+            $rate = $_POST['rate'];
+            mysqli_query($mysqli, "INSERT INTO `review`(review_id, rate, review_text, user_id, smartphone_id) VALUES (NULL,  '$rate', '$text', '$user_id', '$phone_id')");
+            echo '<script>alert("New review was added!")</script>';
+        }
+   // }
     ?>
 </div>
 

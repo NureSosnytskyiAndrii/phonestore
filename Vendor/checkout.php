@@ -37,12 +37,14 @@ if (isset($_SESSION['login']) && $_SESSION['uid']) {
         $total_price = $_POST['total_price'];
        // $total_price = filter_var($total_price, FILTER_SANITIZE_STRING);
 
-        $current_date = date("m.d.y");
-        $current_time = date("H:i:s");
+        $tz = 'Europe/Kiev';
+        $timestamp = time();
+        $dt = new DateTime("now", new DateTimeZone($tz));
+        $dt->setTimestamp($timestamp);
+        $current_datetime = $dt->format('Y-m-d H:i:s');
 
-
-        mysqli_query($mysqli, "INSERT INTO `order`(order_id, name, surname, email, phone_number, order_date, order_time, cost, payment_method, payment_status, user_id, city, street, flat)
-        VALUES (NULL, '$name', '$surname', '$email', '$number', '$current_date', '$current_time', '$total_price', '$method', 'pending', '$user_id', '$city', '$street', '$flat')");
+        mysqli_query($mysqli, "INSERT INTO `order`(order_id, name, surname, email, phone_number, order_date , cost, payment_method, payment_status, user_id, city, street, flat)
+        VALUES (NULL, '$name', '$surname', '$email', '$number', '$current_datetime', '$total_price', '$method', 'pending', '$user_id', '$city', '$street', '$flat')");
 
         // $insert_order_items = mysqli_query($mysqli, "INSERT INTO `order_items`(order_item_id, quantity, smartphone_id, order_id) VALUES (NULL, ())");
         //mysqli_query($mysqli,"INSERT INTO `order_items`VALUES (NULL,  (SELECT basket_device.quantity FROM basket_device WHERE basket_id = '$basket_id[basket_id]'), (SELECT basket_device.smartphone_id FROM basket_device WHERE basket_id = '$basket_id[basket_id]' ), 18)");
@@ -134,7 +136,7 @@ if (isset($_SESSION['login']) && $_SESSION['uid']) {
             </div>
             <div class="inputBox">
                 <span>Your email:</span>
-                <input type="email" maxlength="20" placeholder="Enter your email" required class="box" name="email"/>
+                <input type="email" maxlength="55" placeholder="Enter your email" required class="box" name="email"/>
             </div>
             <div class="inputBox">
                 <span>Payment method:</span>

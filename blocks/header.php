@@ -57,15 +57,18 @@
         </ul>
         <form class="form-inline my-2 my-lg-0">
             <?php
+            global $mysqli;
             if (isset($_SESSION['login']) && $_SESSION['uid']) {
                 $user_obj = new User();
                 $user = $user_obj->getUserById($_SESSION['uid']);
                 $user_first_name = $user['first_name'];
                 $user_last_name = $user['last_name'];
-
+                $user_id = $user['user_id'];
+                $count_cart_items = mysqli_query($mysqli, "SELECT COUNT(*) FROM `basket_device` WHERE basket_id in (SELECT basket_id FROM basket WHERE user_id='$user_id')");
+                $count_cart_items = mysqli_fetch_assoc($count_cart_items);
                 ?>
                 <span class="text-white"><?php echo $user_first_name . '&nbsp;' . $user_last_name; ?></span>&nbsp;&nbsp;&nbsp;
-
+                <span class="text-white"><i class="far fa-shopping-cart"></i>(<?php echo $count_cart_items['COUNT(*)']; ?>)</span>
                 <?php
                 if($user['status'] == "admin"){
                     echo '<a class="btn btn-outline-info my-2 my-sm-0" href="/admin_panel/">Admin panel</a>';

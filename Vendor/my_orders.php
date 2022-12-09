@@ -56,7 +56,6 @@ if (isset($_SESSION['login']) && $_SESSION['uid']) {
                         <p> payment method: <span><?=$fetch_orders->payment_method;?></span></p>
                         <p> payment status: <span style="color: <?php if($fetch_orders->payment_status == 'pending'){echo 'red';}else{echo 'green';}?>"><?=$fetch_orders->payment_status;?></span></p>
                         <p> order date: <span><?=$fetch_orders->order_date;?></span></p>
-                        <p> order time: <span><?=$fetch_orders->order_time;?></span></p>
                         <p> total cost: <span>$ <?=$fetch_orders->cost;?></span></p>
                         <a type="button" class="btn btn-success" <?php if($fetch_orders->payment_status == 'pending')echo 'hidden="hidden"'; ?>href="../System/classes/order_to_pdf.php?id=<?=$fetch_orders->order_id;?>" target="_blank">Print receipt</a>
                     </div>
