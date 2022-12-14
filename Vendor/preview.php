@@ -26,6 +26,7 @@ require_once "System/configuration.php";
 </head>
 <body>
 
+<h2 align="center" class="text-primary">Choose brand</h2>
 <div class="container">
     <?php
     $all_brands = $mysqli->query("SELECT * FROM `brand`");
@@ -39,53 +40,73 @@ require_once "System/configuration.php";
     <?php } ?>
 </div>
 
-<!--<div class="container-fluid">
-    <div class="row">
-        <div class="col-md-12">
-            <div class="card">
-                <div class="card-header bg-success">
-                    <span class="text-white">Smartphones</span>
-                </div>
-                <div class="card-body">
-                    <table class="table table-striped">
-                        <thead class="thead-dark">
-                        <tr>
-                            <th>Smartphone ID</th>
-                            <th>Model</th>
-                            <th>Year</th>
-                            <th>Price</th>
-                            <th>Smartphone type</th>
-                            <th>Quantity</th>
-                            <th>brand_id</th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <?php
-                        $all_phones = $mysqli->query("SELECT * FROM `smartphone` ");
+<h2 align="center" class="text-primary">Newest smartphones</h2>
+<div class="container form-inline" style="margin-top: 50px;margin-left: 300px;">
+    <?php
+        $newestPhone = mysqli_query($mysqli, "SELECT smartphone_id,smartphone.brand_id, image,price,model,brand_name FROM smartphone, brand where smartphone.brand_id=brand.brand_id ORDER BY smartphone_id DESC LIMIT 3");
+        while ($phone = $newestPhone->fetch_object()) {
+        ?>
 
-                        while ($phone = $all_phones->fetch_object()) {
-                            ?>
-                            <tr>
-                                <td><?= $phone->smartphone_id; ?></td>
-                                <td><?= $phone-> model; ?></td>
-                                <td><?= $phone->year; ?></td>
-                                <td><?= $phone->price . '$' ?></td>
-                                <td><?php echo $phone->type ?: "Not filled"; ?></td>
-                                <td><?php echo $phone->quantity ?: "Not filled"; ?></td>
-                                <td><?php echo $phone->brand_id ?: "Not filled"; ?></td>
-                                <td><img style="height: 100px; width: 150px" src="<?php echo $phone->image?>"/></td>
-                                <td> <a type="button" href="seperate_characteristic.php?id=<?= $phone->smartphone_id ?>"
-                                        class="btn btn-info">Characteristics</a></td>
-                            </tr>
-                        <?php } ?>
-                        </tbody>
-                    </table>
+    <div class="phone_card">
+        <div class="product">
+            <div class="image">
+                <img  src="<?php echo $phone->image?>" style="height: 200px; width: 200px;" alt="It is a photo"/>
+            </div>
+
+            <div class="info">
+                <h3><?= $phone->brand_name; ?></h3>
+                <!-- <h4><a href="../Vendor/phone_details.php?id=<?= $phone->smartphone_id. '&brand_id='. $phone->brand_id; ?>"><?= $phone-> model; ?></a></h4>-->
+                <h4><a href="/?page=phone_details&id=<?= $phone->smartphone_id. '&brand_id='. $phone->brand_id; ?>"><?= $phone-> model; ?></a></h4>
+
+                <div class="info-price">
+                    <span class="price"><?= $phone->price . '$' ?></span>
                 </div>
             </div>
         </div>
     </div>
-</div>-->
+    <form method="post">
+        <input type="hidden" style="display: none" name="phone_id" value="<?php echo $phone->smartphone_id; ?>"/>
+        <input type="hidden" style="display: none" name="phone_image" value="<?php echo $phone->image; ?>"/>
+        <input type="hidden" style="display: none" name="phone_model" value="<?php echo $phone->model; ?>"/>
+        <input type="hidden" style="display: none" name="phone_price" value="<?php echo $phone->price; ?>"/>
+    </form>
+    <?php
+    }?>
+</div>
+
+<h2 align="center" class="text-primary" style="margin-top: 100px;">Top best-rated smartphones</h2>
+<div class="container form-inline" style="margin-top: 50px;margin-left: 300px;">
+    <?php
+    $bestRatedPhone = mysqli_query($mysqli, "SELECT smartphone.smartphone_id,smartphone.brand_id, image,price,model,brand_name, AVG(rate) FROM smartphone, brand, review where smartphone.brand_id=brand.brand_id AND smartphone.smartphone_id=review.smartphone_id GROUP BY  smartphone.smartphone_id,smartphone.brand_id, image,price,model,brand_name HAVING AVG(rate) > 4 ORDER BY smartphone_id DESC LIMIT 5 ");
+    while ($phone = mysqli_fetch_assoc($bestRatedPhone)) {
+    ?>
+
+    <div class="phone_card">
+        <div class="product">
+            <div class="image">
+                <img  src="<?php echo $phone['image']?>" style="height: 200px; width: 200px;" alt="It is a photo"/>
+            </div>
+
+            <div class="info">
+                <h3><?= $phone['brand_name']; ?></h3>
+                <!-- <h4><a href="../Vendor/phone_details.php?id=<?= $phone['smartphone_id']. '&brand_id='. $phone['brand_id']; ?>"><?= $phone['model']; ?></a></h4>-->
+                <h4><a href="/?page=phone_details&id=<?= $phone['smartphone_id']. '&brand_id='. $phone['brand_id']; ?>"><?= $phone['model']; ?></a></h4>
+
+                <div class="info-price">
+                    <span class="price"><?= $phone['price'] . '$' ?></span>
+                    <span class="rate">Rate: <?= $phone['AVG(rate)']; ?></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <form method="post">
+        <input type="hidden" style="display: none" name="phone_id" value="<?php echo $phone['smartphone_id']; ?>"/>
+        <input type="hidden" style="display: none" name="phone_image" value="<?php echo $phone['image']; ?>"/>
+        <input type="hidden" style="display: none" name="phone_model" value="<?php echo $phone['model']; ?>"/>
+        <input type="hidden" style="display: none" name="phone_price" value="<?php echo $phone['price']; ?>"/>
+    </form>
+    <?php } ?>
+</div>
+
+
 

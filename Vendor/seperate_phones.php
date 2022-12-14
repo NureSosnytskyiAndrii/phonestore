@@ -80,7 +80,17 @@ if (isset($_SESSION['login']) && $_SESSION['uid']) {
     </div>
     <button class="btn btn-primary mb-2" formmethod="post">Search</button>
 </form>
-    <form class="form-inline">
+    <div><button class="btn btn-light btn-block" onclick="
+      document.getElementById('form_factor').removeAttribute('hidden', true);
+      document.getElementById('wishes').removeAttribute('hidden', true);
+      document.getElementById('sortByPrice').removeAttribute('hidden', true);
+      document.getElementById('year_of_prod').removeAttribute('hidden', true);
+    " ondblclick="document.getElementById('form_factor').setAttribute('hidden', true);
+    document.getElementById('wishes').setAttribute('hidden', true);
+    document.getElementById('sortByPrice').setAttribute('hidden', true);
+    document.getElementById('year_of_prod').setAttribute('hidden', true);
+    ">Advanced search</button></div>
+    <form class="form-inline" hidden="hidden" id="sortByPrice">
         <div class="form-group mx-sm-3 mb-2">
             <label> Sort from lower to higher
             <input type="checkbox" name="from_lower_to_higher"/>
@@ -93,12 +103,12 @@ if (isset($_SESSION['login']) && $_SESSION['uid']) {
         </div>
         <button class="btn btn-success mb-2" formmethod="post">Filter</button>
     </form>
-    <form>
+    <form id="year_of_prod" hidden="hidden">
         <div class="form-group mx-sm-3 mb-2">
             <label> Year of production
                 <select name="year_of_prod">
                     <?php
-                    $year = $mysqli->query("SELECT smartphone.year_of_production FROM `smartphone`, `brand` WHERE number_of_items!=0 and smartphone.brand_id=brand.brand_id AND brand.brand_name in (SELECT brand.brand_name FROM brand WHERE brand.brand_id = '$Brand_id') ");
+                    $year = $mysqli->query("SELECT DISTINCT smartphone.year_of_production FROM `smartphone`, `brand` WHERE number_of_items!=0 and smartphone.brand_id=brand.brand_id AND brand.brand_name in (SELECT brand.brand_name FROM brand WHERE brand.brand_id = '$Brand_id') ");
 
                     while ($Year_of_prod = $year->fetch_object()) {
                         ?>
@@ -109,6 +119,28 @@ if (isset($_SESSION['login']) && $_SESSION['uid']) {
             <button class="btn btn-primary mb-2" formmethod="post">Search by year</button>
         </div>
     </form>
+    <form hidden="hidden" id="form_factor">
+        <div class="form-group mx-sm-3 mb-2">
+            <label> Screen type
+                <select name="form_fact">
+                    <?php
+                    $form_fact = $mysqli->query("SELECT DISTINCT smartphone.form_factor  FROM smartphone, `brand` WHERE smartphone.brand_id=brand.brand_id AND brand.brand_name in (SELECT brand.brand_name FROM brand WHERE brand.brand_id = '$Brand_id') ");
+
+                    while ($Form_factor = $form_fact->fetch_object()) {
+                        ?>
+                        <option><?= $Form_factor->form_factor; ?></option>
+                    <?php } ?>
+                </select>
+            </label>
+            <button class="btn btn-primary mb-2" formmethod="post">Search form-factor</button>
+        </div>
+    </form>
+    <form hidden="hidden" id="wishes">
+        <label> Sort by rate desc
+                <input type="checkbox" name="sort_by_rate"/>
+        </label>
+        <button class="btn btn-success mb-2" formmethod="post">Filter</button>
+    </form>
 </div>
 
 <div class="container form-inline">
@@ -116,7 +148,7 @@ if (isset($_SESSION['login']) && $_SESSION['uid']) {
 
     if(isset($_POST['searchPhone']) != ''){
         $searchPhoneByModel = $_POST['searchPhone'];
-        $searchPhone = mysqli_query($mysqli,"SELECT smartphone_id, smartphone.brand_id, model, price, image, brand.brand_name FROM `smartphone`, `brand` WHERE number_of_items!=0 and smartphone.model LIKE '$searchPhoneByModel%' and smartphone.brand_id=brand.brand_id AND brand.brand_name in (SELECT brand.brand_name FROM brand WHERE brand.brand_id = '$Brand_id') ");
+        $searchPhone = mysqli_query($mysqli,"SELECT smartphone_id, smartphone.brand_id, model, price, image, brand.brand_name FROM `smartphone`, `brand` WHERE number_of_items!=0 and smartphone.model LIKE '%$searchPhoneByModel%' and smartphone.brand_id=brand.brand_id AND brand.brand_name in (SELECT brand.brand_name FROM brand WHERE brand.brand_id = '$Brand_id') ");
    // print_r($searchPhone);
     while ($phone = $searchPhone->fetch_object()) {
         ?>
@@ -237,7 +269,66 @@ if (isset($_SESSION['login']) && $_SESSION['uid']) {
                 <button type="submit" class="btn add-to-cart" name="add_to_cart"><ion-icon name="cart-outline"></ion-icon></button>
             </form>
     <?php } }
-    if(isset($_POST['searchPhone']) == '' && $_POST['from_lower_to_higher'] == '' && $_POST['from_higher_to_lower'] == '' && $_POST['year_of_prod'] == ''){
+    if(isset($_POST['form_fact'])){
+    $form_f = $_POST['form_fact'];
+    $Form_f = mysqli_query($mysqli,"SELECT smartphone_id, smartphone.brand_id, model, price, image, brand.brand_name FROM `smartphone`, `brand` WHERE number_of_items!=0 and smartphone.brand_id=brand.brand_id AND form_factor='$form_f' AND brand.brand_name in (SELECT brand.brand_name FROM brand WHERE brand.brand_id = '$Brand_id')");
+    while ($phone = $Form_f->fetch_object()) {
+    ?>
+    <div class="phone_card" id="asc">
+        <div class="product">
+            <div class="image">
+                <img  src="<?php echo $phone->image?>" style="height: 200px; width: 200px;" alt="It is a photo"/>
+            </div>
+
+            <div class="info">
+                <h3><?= $phone->brand_name; ?></h3>
+                <!-- <h4><a href="../Vendor/phone_details.php?id=<?= $phone->smartphone_id. '&brand_id='. $phone->brand_id; ?>"><?= $phone-> model; ?></a></h4>-->
+                <h4><a href="/?page=phone_details&id=<?= $phone->smartphone_id. '&brand_id='. $phone->brand_id; ?>"><?= $phone-> model; ?></a></h4>
+
+                <div class="info-price">
+                    <span class="price"><?= $phone->price . '$' ?></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <form method="post">
+        <input type="hidden" style="display: none" name="phone_id" value="<?php echo $phone->smartphone_id; ?>"/>
+        <input type="hidden" style="display: none" name="phone_image" value="<?php echo $phone->image; ?>"/>
+        <input type="hidden" style="display: none" name="phone_model" value="<?php echo $phone->model; ?>"/>
+        <input type="hidden" style="display: none" name="phone_price" value="<?php echo $phone->price; ?>"/>
+        <button type="submit" class="btn add-to-cart" name="add_to_cart"><ion-icon name="cart-outline"></ion-icon></button>
+    </form>
+        <?php } }
+        if(isset($_POST['sort_by_rate'])){
+            $sortByRateAsc = $_POST['sort_by_rate'];
+            $best_rate = $mysqli->query("SELECT smartphone.smartphone_id,smartphone.brand_id, image,price,model,brand_name, AVG(rate) FROM smartphone, brand, review where smartphone.brand_id=brand.brand_id AND smartphone.smartphone_id=review.smartphone_id AND brand.brand_name in (SELECT brand.brand_name FROM brand WHERE brand.brand_id = '$Brand_id') GROUP BY  smartphone.smartphone_id,smartphone.brand_id, image,price,model,brand_name ORDER BY avg(rate) desc");
+            while ($phone = mysqli_fetch_assoc($best_rate)) {
+                ?>
+                <div class="phone_card" id="asc">
+                    <div class="product">
+                        <div class="image">
+                            <img  src="<?php echo $phone['image']?>" style="height: 200px; width: 200px;" alt="It is a photo"/>
+                        </div>
+
+                        <div class="info">
+                            <h3><?= $phone['brand_name']; ?></h3>
+                            <h4><a href="/?page=phone_details&id=<?= $phone['smartphone_id']. '&brand_id='. $phone['brand_id']; ?>"><?= $phone['model']; ?></a></h4>
+
+                            <div class="info-price">
+                                <span class="price"><?= $phone['price'] . '$' ?></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <form method="post">
+                    <input type="hidden" style="display: none" name="phone_id" value="<?php echo $phone['smartphone_id']; ?>"/>
+                    <input type="hidden" style="display: none" name="phone_image" value="<?php echo $phone['image']; ?>"/>
+                    <input type="hidden" style="display: none" name="phone_model" value="<?php echo $phone['model']; ?>"/>
+                    <input type="hidden" style="display: none" name="phone_price" value="<?php echo $phone['price']; ?>"/>
+                    <button type="submit" class="btn add-to-cart" name="add_to_cart"><ion-icon name="cart-outline"></ion-icon></button>
+                </form>
+    <?php } }
+    if(isset($_POST['searchPhone']) == '' && $_POST['from_lower_to_higher'] == '' && $_POST['from_higher_to_lower'] == '' && $_POST['year_of_prod'] == '' && $_POST['form_fact'] == '' && $_POST['sort_by_rate'] == ''){
     $all_phones = $mysqli->query("SELECT smartphone_id, smartphone.brand_id, model, price, image, brand.brand_name FROM `smartphone`, `brand` WHERE number_of_items!=0 and smartphone.brand_id=brand.brand_id AND brand.brand_name in (SELECT brand.brand_name FROM brand WHERE brand.brand_id = '$Brand_id') ");
 
     while ($phone = $all_phones->fetch_object()) {

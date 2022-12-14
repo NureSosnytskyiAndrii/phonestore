@@ -7,7 +7,7 @@ if (isset($_SESSION['login']) && $_SESSION['uid']) {
     $user_obj = new User();
     $user = $user_obj->getUserById($_SESSION['uid']);
     $user_id = $user['user_id'];
-    echo $user_id;
+    //echo $user_id;
 }
 ?>
 

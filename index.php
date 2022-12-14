@@ -26,6 +26,9 @@ if(isset($_GET['page'])) {
         case "admin_main":
             require_once "admin_panel/pages/admin_main.php";
             break;
+        case "create_ord":
+            require_once "admin_panel/pages/create_ord.php";
+            break;
         case "add_characteristics":
             require_once "admin_panel/pages/add_characteristics.php";
             break;
@@ -43,6 +46,12 @@ if(isset($_GET['page'])) {
             break;
         case "edit_provider":
             require_once "admin_panel/pages/edit_provider.php";
+            break;
+        case "user_delete":
+            require_once "admin_panel/pages/user_delete.php";
+            break;
+        case "user_edit":
+            require_once "admin_panel/pages/user_edit.php";
             break;
         case "edit_one_characteristic":
             require_once "admin_panel/pages/edit_one_characteristic.php";

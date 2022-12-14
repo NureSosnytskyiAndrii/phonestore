@@ -22,6 +22,7 @@ echo '<div style="color: #0efa56; font-size: 2em;">
   <strong>Success!</strong> New smartphone has been added!
 </div>';
 
+echo '<a style="background-color: #0e97fa;" type="button" href="http://phonestore.local/admin_panel/?page=admin_main">Admin main</a>';
 
 mysqli_query($mysqli, "INSERT INTO `brand` (`brand_id`,`brand_name`, `country`) VALUE (NULL, '$brand', '$country')");
 //mysqli_query($mysqli, "")

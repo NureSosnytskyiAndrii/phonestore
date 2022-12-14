@@ -12,9 +12,11 @@
     <link rel="stylesheet" href="/assets/css/bootstrap-grid.min.css"> -->
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
     <script defer src="https://pro.fontawesome.com/releases/v5.10.0/js/all.js" integrity="sha384-G/ZR3ntz68JZrH4pfPJyRbjW+c0+ojii5f+GYiYwldYU69A+Ejat6yIfLSxljXxD" crossorigin="anonymous"></script>
+
     <style>
         .dropdown-menu{
             background:
@@ -39,7 +41,7 @@
 <body>
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <a class="navbar-brand" href="#">PhoneStore</a>
+    <a class="navbar-brand" href="#"><span class="text-primary">Phone</span>Store</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -72,6 +74,7 @@
                 <?php
                 if($user['status'] == "admin"){
                     echo '<a class="btn btn-outline-info my-2 my-sm-0" href="/admin_panel/">Admin panel</a>';
+                    echo '<a class="btn btn-outline-primary my-2 my-sm-0" href="/admin_panel/do_sql.php">Do sql</a>';
                 }
                 ?>
 
@@ -83,3 +86,4 @@
         </form>
     </div>
 </nav>
+

@@ -30,8 +30,17 @@ if(isset($_GET['page'])) {
         case "edit_provider":
             require_once "pages/edit_provider.php";
             break;
+        case "user_delete":
+            require_once "pages/user_delete.php";
+            break;
+        case "user_edit":
+            require_once "pages/user_edit.php";
+            break;
         case "edit_one_characteristic":
             require_once "pages/edit_one_characteristic.php";
+            break;
+        case "create_ord":
+            require_once "pages/create_ord.php";
             break;
         default:
             require_once "/pages/404.php";

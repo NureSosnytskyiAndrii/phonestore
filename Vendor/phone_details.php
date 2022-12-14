@@ -59,7 +59,7 @@ if (isset($_SESSION['login']) && $_SESSION['uid']) {
         //$all_phones = $mysqli->query("SELECT image, model, price FROM smartphone WHERE smartphone_id = '$phone_id'");
         $avg_rating = $mysqli->query("SELECT AVG(rate) FROM review WHERE smartphone_id='$phone_id'");
         $avg_rating = mysqli_fetch_assoc($avg_rating);
-        $all_phones = $mysqli->query("SELECT image, brand.brand_name, model, price FROM smartphone, brand WHERE smartphone.smartphone_id = '$phone_id' and smartphone.brand_id = brand.brand_id  AND brand.brand_name in (SELECT brand.brand_name FROM brand WHERE brand.brand_id = '$brand_id')");
+        $all_phones = $mysqli->query("SELECT image, brand.brand_name, model, price, operation_system, form_factor FROM smartphone, brand WHERE smartphone.smartphone_id = '$phone_id' and smartphone.brand_id = brand.brand_id  AND brand.brand_name in (SELECT brand.brand_name FROM brand WHERE brand.brand_id = '$brand_id')");
         while ($phone = $all_phones->fetch_object()) {
         ?>
         <div class="col-md-4">
@@ -73,9 +73,12 @@ if (isset($_SESSION['login']) && $_SESSION['uid']) {
                     <h4><?= $phone-> model; ?></h4>
 
                     <div class="info-price">
-                        <span class="price">Price <?= $phone->price . '$' ?></span>
+                        <span class="price"><b>Price:</b> <?= $phone->price . '$' ?></span>
                         <div>
-                        <span class="rate">Rate: <?= $avg_rating['AVG(rate)'] ?: "Not filled"; ?></span>
+                            <span class="rate"><b>Rate:</b> <?= $avg_rating['AVG(rate)'] ?: "Not filled"; ?></span>
+                        </div>
+                        <div>
+                            <span><b>Description:</b> <?="Operation system: ". $phone->operation_system ."; form-factor: ". $phone->form_factor;?></span>
                         </div>
                         <div class="container-buttons">
                             <button class="btn btn-success" onclick="showAllCharacteristics()">Show characteristics</button>
@@ -138,7 +141,6 @@ if (isset($_SESSION['login']) && $_SESSION['uid']) {
     $user_obj = new User();
     $user = $user_obj->getUserById($_SESSION['uid']);
     $user_id = $user['user_id'];
-    echo $user_id;
         $all_reviews = mysqli_query($mysqli, "SELECT review_id, rate, review_text, user.login, review.user_id  FROM review, user WHERE user.user_id = review.user_id AND smartphone_id = '$phone_id' ORDER BY rate DESC");
         while ($fetch_reviews = $all_reviews->fetch_object()){
     ?>
@@ -175,10 +177,10 @@ if (isset($_SESSION['login']) && $_SESSION['uid']) {
     </div>
 </form>
     <?php
-    /*if (isset($_SESSION['login']) && $_SESSION['uid']) {
+    if (isset($_SESSION['login']) && $_SESSION['uid']) {
         $user_obj = new User();
         $user = $user_obj->getUserById($_SESSION['uid']);
-        $user_id = $user['user_id'];*/
+        $user_id = $user['user_id'];
 
         if(isset($_POST['review_text'])) {
             $text = $_POST['review_text'];
@@ -186,7 +188,7 @@ if (isset($_SESSION['login']) && $_SESSION['uid']) {
             mysqli_query($mysqli, "INSERT INTO `review`(review_id, rate, review_text, user_id, smartphone_id) VALUES (NULL,  '$rate', '$text', '$user_id', '$phone_id')");
             echo '<script>alert("New review was added!")</script>';
         }
-   // }
+    }
     ?>
 </div>
 

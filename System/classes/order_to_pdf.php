@@ -13,7 +13,6 @@ $info=[
     "phone"=>"",
     "total"=>"",
     "order_date"=>"",
-    "order_time"=>"",
 
 ];
 
@@ -31,7 +30,6 @@ if(mysqli_num_rows($order_info) > 0){
         "phone"=>$order_info['phone_number'],
         "total"=>$order_info['cost'],
         "order_date"=>$order_info['order_date'],
-        "order_time"=>$order_info['order_time'],
     ];
 }
 
@@ -60,13 +58,13 @@ class PDF extends FPDF
         $this->SetFont('Arial','B',14);
         $this->Cell(50,10,"PhoneStore",0,1);
         $this->SetFont('Arial','',14);
-        $this->Cell(50,7,"Heroiv pratsi Street,",0,1);
+        $this->Cell(50,7,"Heroiv pratsi Street, 9",0,1);
 
         //Display INVOICE text
         $this->SetY(15);
         $this->SetX(-40);
         $this->SetFont('Arial','B',18);
-        $this->Cell(50,10,"INVOICE",0,1);
+        $this->Cell(50,10,"RECEIPT",0,1);
 
         //Display Horizontal line
         $this->Line(0,48,210,48);
@@ -87,13 +85,8 @@ class PDF extends FPDF
 
         //Display order date
         $this->SetY(55);
-        $this->SetX(-60);
+        $this->SetX(-90);
         $this->Cell(50,7,"Order date : ".$info["order_date"]);
-
-        //Display order time
-        $this->SetY(63);
-        $this->SetX(-60);
-        $this->Cell(50,7,"Order time : ".$info["order_time"]);
 
         //Display order id
         $this->SetY(71);
@@ -133,13 +126,6 @@ class PDF extends FPDF
         $this->Cell(150,9,"TOTAL",1,0,"R");
         $this->Cell(40,9,$info["total"],1,1,"R");
 
-        //Display amount in words
-        $this->SetY(225);
-        $this->SetX(10);
-        $this->SetFont('Arial','B',12);
-        $this->Cell(0,9,"Amount in Words ",0,1);
-        $this->SetFont('Arial','',12);
-        $this->Cell(0,9,$info["words"],0,1);
 
     }
     function Footer(){

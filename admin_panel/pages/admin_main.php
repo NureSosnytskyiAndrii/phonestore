@@ -108,7 +108,8 @@ if((isset($_GET['action']) && $_GET['action'] == "delete_one_order") && isset($_
         <li><a type="button" href="#" onclick="addNewProvider()">Add provider</a></li>
         <li><a type="button" href="#" onclick="showOrders()">Orders</a></li>
         <li><a type="button" href="#" onclick="showCompletedOrders()">Completed orders</a></li>
-        <li><a type="button" href="#" onclick="">Show users</a></li>
+        <li><a type="button" href="#" onclick="createOrderToProvider()">Order to provider</a></li>
+        <li><a type="button" href="#" onclick="showAllUsers()">Show users</a></li>
     </ul>
 </div>
 
@@ -387,7 +388,6 @@ if(($provider_name &&  $provider_surname && $email && $provider_phone && $provid
             <th>Flat</th>
             <th>Payment status</th>
             <th>Order date</th>
-            <th>Time</th>
             <th>Cost</th>
             <th></th>
         </tr>
@@ -410,7 +410,6 @@ if(($provider_name &&  $provider_surname && $email && $provider_phone && $provid
             <td><b><?=$show_orders->flat;?></b></td>
             <td><b><?= $show_orders->payment_status; ?></b></td>
             <td><b><?=$show_orders->order_date;?></b></td>
-            <td><b><?=$show_orders->order_time;?></b></td>
             <td><b><?=$show_orders->cost;?></b></td>
         </tr>
         <tr>
@@ -434,6 +433,103 @@ if(($provider_name &&  $provider_surname && $email && $provider_phone && $provid
     <h2 style="float: right;">Total earnings:<?php echo $earned_sum.'$'; ?></h2>
 </div>
 
+<div style="margin-left: 300px;" class="container col-9 show-orders" id="createOrderToProvider" hidden="hidden">
+    <h3>Remained phones</h3>
+    <table class="table table-bordered">
+        <thead class="thead-dark">
+        <tr>
+            <th>Model</th>
+            <th>Quantity</th>
+        </tr>
+        </thead>
+        <tbody>
+        <?php
+        $remained_phones = $mysqli->query("SELECT * FROM `smartphone` WHERE number_of_items <= 3 ORDER BY number_of_items DESC");
+
+        while ($Remained = $remained_phones->fetch_object()) {
+            ?>
+            <tr>
+                <td><?=$Remained->model; ?></td>
+                <td><?=$Remained->number_of_items; ?></td>
+            </tr>
+        <?php } ?>
+        </tbody>
+    </table>
+    <h3 align="center">Choose a provider</h3>
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Surname</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <?php
+        $all_providers = $mysqli->query("SELECT * FROM `provider` WHERE provider.email IS NOT NULL");
+
+        while ($Provider = $all_providers->fetch_object()) {
+            ?>
+            <tr>
+                <td><?=$Provider->provider_name; ?></td>
+                <td><?=$Provider->provider_surname; ?></td>
+                <td><?= $Provider->email; ?></td>
+                <td><?=$Provider->phone; ?></td>
+                <td><a type="button" class="btn btn-success" href="/?page=create_ord&id=<?=$Provider->provider_id;?>">Create order to provider</a></td>
+            </tr>
+    <?php } ?>
+        </tbody>
+    </table>
+</div>
+
+<div style="margin-left: 300px;" class="container col-9 show-orders" id="showUsers" hidden="hidden">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-success">
+                    <span class="text-white">Users</span>
+                </div>
+                <div class="card-body">
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>First name</th>
+                            <th>Last name</th>
+                            <th>Login</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <?php
+                        $all_users = $mysqli->query("SELECT * FROM user ORDER BY user_id ASC ");
+
+                        while ($user = $all_users->fetch_object()) {
+                            ?>
+                            <tr>
+                                <td><?= $user->user_id; ?></td>
+                                <td><?= $user->first_name; ?></td>
+                                <td><?= $user->last_name; ?></td>
+                                <td><?php echo $user->login ?: "Not filled"; ?></td>
+                                <td><?php echo $user->status ?: "Not filled"; ?></td>
+                                <td>
+                                    <a href="/?page=user_edit&id=<?= $user->user_id; ?>" class="btn btn-primary" <?php if($user->user_id == 1){echo 'hidden="hidden"';}?>>Edit</a>
+                                    <a href="/?page=user_delete&action=delete&id=<?= $user->user_id; ?>"
+                                       class="btn btn-danger" <?php if($user->user_id == 1){echo 'hidden="hidden"';} ?>>Delete</a>
+                                </td>
+                            </tr>
+                        <?php } ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     function showAllPhones() {
         document.getElementById('smartphones_one_brand').removeAttribute("hidden", true);
@@ -443,6 +539,8 @@ if(($provider_name &&  $provider_surname && $email && $provider_phone && $provid
         document.getElementById('showAllProviders').setAttribute("hidden", true);
         document.getElementById('showOrders').setAttribute("hidden", true);
         document.getElementById('showCompletedOrders').setAttribute("hidden", true);
+        document.getElementById('createOrderToProvider').setAttribute("hidden", true);
+        document.getElementById('showUsers').setAttribute("hidden", true);
     }
     function addNewPhone() {
         document.getElementById('addNewPhone').removeAttribute("hidden", true);
@@ -452,6 +550,8 @@ if(($provider_name &&  $provider_surname && $email && $provider_phone && $provid
         document.getElementById('showAllProviders').setAttribute("hidden", true);
         document.getElementById('showOrders').setAttribute("hidden", true);
         document.getElementById('showCompletedOrders').setAttribute("hidden", true);
+        document.getElementById('createOrderToProvider').setAttribute("hidden", true);
+        document.getElementById('showUsers').setAttribute("hidden", true);
     }
     function addNewProvider() {
         document.getElementById('addNewPhone').setAttribute("hidden", true);
@@ -461,6 +561,8 @@ if(($provider_name &&  $provider_surname && $email && $provider_phone && $provid
         document.getElementById('showAllProviders').setAttribute("hidden", true);
         document.getElementById('showOrders').setAttribute("hidden", true);
         document.getElementById('showCompletedOrders').setAttribute("hidden", true);
+        document.getElementById('createOrderToProvider').setAttribute("hidden", true);
+        document.getElementById('showUsers').setAttribute("hidden", true);
     }
     function showBrands(){
         document.getElementById('addNewPhone').setAttribute("hidden", true);
@@ -470,6 +572,8 @@ if(($provider_name &&  $provider_surname && $email && $provider_phone && $provid
         document.getElementById('showAllProviders').setAttribute("hidden", true);
         document.getElementById('showOrders').setAttribute("hidden", true);
         document.getElementById('showCompletedOrders').setAttribute("hidden", true);
+        document.getElementById('createOrderToProvider').setAttribute("hidden", true);
+        document.getElementById('showUsers').setAttribute("hidden", true);
     }
     function showProviders() {
         document.getElementById('addNewPhone').setAttribute("hidden", true);
@@ -479,6 +583,8 @@ if(($provider_name &&  $provider_surname && $email && $provider_phone && $provid
         document.getElementById('showAllProviders').removeAttribute("hidden", true);
         document.getElementById('showOrders').setAttribute("hidden", true);
         document.getElementById('showCompletedOrders').setAttribute("hidden", true);
+        document.getElementById('createOrderToProvider').setAttribute("hidden", true);
+        document.getElementById('showUsers').setAttribute("hidden", true);
     }
     function showOrders() {
         document.getElementById('addNewPhone').setAttribute("hidden", true);
@@ -488,6 +594,8 @@ if(($provider_name &&  $provider_surname && $email && $provider_phone && $provid
         document.getElementById('showAllProviders').setAttribute("hidden", true);
         document.getElementById('showOrders').removeAttribute("hidden", true);
         document.getElementById('showCompletedOrders').setAttribute("hidden", true);
+        document.getElementById('createOrderToProvider').setAttribute("hidden", true);
+        document.getElementById('showUsers').setAttribute("hidden", true);
     }
     function showCompletedOrders() {
         document.getElementById('addNewPhone').setAttribute("hidden", true);
@@ -497,6 +605,30 @@ if(($provider_name &&  $provider_surname && $email && $provider_phone && $provid
         document.getElementById('showAllProviders').setAttribute("hidden", true);
         document.getElementById('showOrders').setAttribute("hidden", true);
         document.getElementById('showCompletedOrders').removeAttribute("hidden", true);
+        document.getElementById('createOrderToProvider').setAttribute("hidden", true);
+        document.getElementById('showUsers').setAttribute("hidden", true);
+    }
+    function createOrderToProvider() {
+        document.getElementById('addNewPhone').setAttribute("hidden", true);
+        document.getElementById('smartphones_one_brand').setAttribute("hidden", true);
+        document.getElementById('addNewProvider').setAttribute("hidden", true);
+        document.getElementById('showAllBrands').setAttribute("hidden", true);
+        document.getElementById('showAllProviders').setAttribute("hidden", true);
+        document.getElementById('showOrders').setAttribute("hidden", true);
+        document.getElementById('showCompletedOrders').setAttribute("hidden", true);
+        document.getElementById('createOrderToProvider').removeAttribute("hidden", true);
+        document.getElementById('showUsers').setAttribute("hidden", true);
+    }
+    function showAllUsers() {
+        document.getElementById('addNewPhone').setAttribute("hidden", true);
+        document.getElementById('smartphones_one_brand').setAttribute("hidden", true);
+        document.getElementById('addNewProvider').setAttribute("hidden", true);
+        document.getElementById('showAllBrands').setAttribute("hidden", true);
+        document.getElementById('showAllProviders').setAttribute("hidden", true);
+        document.getElementById('showOrders').setAttribute("hidden", true);
+        document.getElementById('showCompletedOrders').setAttribute("hidden", true);
+        document.getElementById('createOrderToProvider').setAttribute("hidden", true);
+        document.getElementById('showUsers').removeAttribute("hidden", true);
     }
 </script>
 
